@@ -11,7 +11,8 @@ class App extends Component {
 			<>
 				<Switch>
 					<Route exact path='/' component={LogIn} />
-					<Route path='/championship' component={Championship} />
+					<Route exact path='/championship' component={Championship} />
+					{/* <Route exact path='/register' component={Register} /> */}
 					<Route component={PageNotFound} />
 				</Switch>
 			</>

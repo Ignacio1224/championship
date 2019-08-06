@@ -6,6 +6,7 @@ class Championship extends Component {
 		return (
 			<>
 				<Header />
+				<h1>PEPE</h1>
 			</>
 		);
 	}

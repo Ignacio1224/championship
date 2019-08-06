@@ -20,14 +20,19 @@ class LogIn extends React.Component {
 	login = event => {
 		event.preventDefault();
 		const { username, password } = this.state;
-
+		
 		if (username !== '' && password !== '') {
-			this.props.history.push('/todolist');
+			this.props.history.push('/championship');
 			this.setState({ username: '', password: '' });
 		} else {
 			alert('Campos incorrectos');
 		}
 	};
+
+	register = () => {
+		const { username, password } = this.state;
+		console.log(username, password);
+	}
 
 	render() {
 		const { username, password } = this.state;
@@ -85,12 +90,10 @@ class LogIn extends React.Component {
 											/>
 										</div>
 										<div className='form-group'>
-											<button className='btn btn-info btn-md mr-4'>
+											<button className='btn btn-info btn-md mr-2' id="login">
 												Log In
 											</button>
-											<Link to='register'>
-												Registrarme
-											</Link>
+											<input type="button" className="btn btn-link" onClick={this.register} value="Register" />
 										</div>
 									</form>
 								</div>

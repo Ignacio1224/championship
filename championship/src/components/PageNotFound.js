@@ -13,8 +13,8 @@ const PageNotFound = props => {
 							<h1>Oops!</h1>
 							<h2>404 Not Found</h2>
 							<div className='error-details'>
-								Sorry, an error has occured, Requested page not
-								found!
+								Disculpe, ha ocurrido un error, 
+								La página buscada no se encontró!
 							</div>
 							<div className='error-actions'>
 								<Link
