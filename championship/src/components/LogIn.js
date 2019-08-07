@@ -1,109 +1,128 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import Register from "./Register";
+import { connect } from "react-redux";
+import { createUser, createChampionship } from "../redux/actions/Actions";
+import { Link } from "react-router-dom";
 
 class LogIn extends React.Component {
-	constructor(props) {
-		super(props);
+  constructor(props) {
+    super(props);
 
-		this.state = {
-			username: '',
-			password: ''
-		};
-	}
+    this.state = {
+      email: "ignaciocabrera1224@gmail.com",
+      password: "123123123",
+      message: null,
+      userId: null,
+      championshipId: null
+    };
+  }
 
-	changeUsername = ({ target: { value } }) =>
-		this.setState({ username: value });
+  setUserId = userId => this.setState({ userId });
+  setChampionshipId = championshipId => this.setState({ championshipId });
 
-	changePassword = ({ target: { value } }) =>
-		this.setState({ password: value });
+  changeEmail = ({ target: { value } }) => this.setState({ email: value });
 
-	login = event => {
-		event.preventDefault();
-		const { username, password } = this.state;
-		
-		if (username !== '' && password !== '') {
-			this.props.history.push('/championship');
-			this.setState({ username: '', password: '' });
-		} else {
-			alert('Campos incorrectos');
-		}
-	};
+  changePassword = ({ target: { value } }) =>
+    this.setState({ password: value });
 
-	register = () => {
-		const { username, password } = this.state;
-		console.log(username, password);
-	}
+  login = event => {
+    event.preventDefault();
+    const { email, password } = this.state;
+    const { toggleIsLoggedIn } = this.props;
 
-	render() {
-		const { username, password } = this.state;
+    if (email !== "" && password !== "") {
+      const miInit = {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({
+          email,
+          password
+        })
+      };
 
-		return (
-			<div id='login-body'>
-				<div id='login'>
-					<div className='container'>
-						<div
-							id='login-row'
-							className='row justify-content-center align-items-center'
-						>
-							<div id='login-column' className='col-md-6'>
-								<div id='login-box' className='col-md-12'>
-									<form
-										id='login-form'
-										className='form'
-										onSubmit={this.login}
-									>
-										<h3 className='text-center text-info'>
-											Login
-										</h3>
-										<div className='form-group'>
-											<label
-												htmlFor='username'
-												className='text-info'
-											>
-												Username:
-											</label>
-											<br />
-											<input
-												type='text'
-												name='username'
-												id='username'
-												value={username}
-												onChange={this.changeUsername}
-												className='form-control'
-											/>
-										</div>
-										<div className='form-group'>
-											<label
-												htmlFor='password'
-												className='text-info'
-											>
-												Password:
-											</label>
-											<br />
-											<input
-												type='text'
-												name='password'
-												id='password'
-												value={password}
-												onChange={this.changePassword}
-												className='form-control'
-											/>
-										</div>
-										<div className='form-group'>
-											<button className='btn btn-info btn-md mr-2' id="login">
-												Log In
-											</button>
-											<input type="button" className="btn btn-link" onClick={this.register} value="Register" />
-										</div>
-									</form>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		);
-	}
+      fetch("http://taller-frontend.herokuapp.com/api/user/login", miInit)
+        .then(resp => resp.json())
+        .then(response => {
+
+          this.props.dispatch(
+            createUser({ id: response._id, email: response.email })
+          );
+
+          this.props.dispatch(
+            createChampionship({
+              id: response.championship._id,
+              isConfirmed: response.championship.isConfirmed
+            })
+          );
+
+          toggleIsLoggedIn();
+          this.setState({ email: "", password: "" });
+          this.props.history.push("/championship");
+        })
+        .catch(err => {
+          this.setState({
+            message: { message: "Ha ocurrido un error!", classEmail: "danger" }
+          });
+        });
+    } else {
+      this.setState({
+        message: {
+          message: "Los datos ingresados no son correctos!",
+          classEmail: "danger"
+        }
+      });
+    }
+  };
+
+  render() {
+    const { email, password, message } = this.state;
+
+    return (
+      <div className="container login-container">
+        <div className="row">
+          <div className="col-md-6 login-form">
+            <h3>Acceder</h3>
+            <form onSubmit={this.login}>
+              {message && (
+                <div
+                  className={`alert alert-${message.classEmail}`}
+                  role="alert"
+                >
+                  {" "}
+                  {message.message}{" "}
+                </div>
+              )}
+              <div className="form-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Email *"
+                  value={email}
+                  onChange={this.changeEmail}
+                />
+              </div>
+              <div className="form-group">
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="Contraseña *"
+                  value={password}
+                  onChange={this.changePassword}
+                />
+              </div>
+              <div className="form-group">
+                <input type="submit" className="btnSubmit" value="Acceder" />
+              </div>
+            </form>
+          </div>
+          <Register
+            {...this.props}
+            toggleIsLoggedIn={this.props.toggleIsLoggedIn}
+          />
+        </div>
+      </div>
+    );
+  }
 }
 
-export default LogIn;
+export default connect()(LogIn);

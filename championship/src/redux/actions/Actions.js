@@ -1,15 +1,15 @@
-function createTask(task) {
+function createUser(user) {
 	return {
-		type: 'CREATE_TASK',
-		task
+		type: 'CREATE_USER',
+		user
 	};
 }
 
-function deleteTask(task) {
+function createChampionship(championship) {
 	return {
-		type: 'DELETE_TASK',
-		task
+		type: 'CREATE_CHAMPIONSHIP',
+		championship
 	};
 }
 
-export { createTask, deleteTask };
+export { createUser, createChampionship };
