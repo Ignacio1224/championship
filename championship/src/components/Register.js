@@ -6,12 +6,13 @@ import { connect } from "react-redux";
 class Register extends Component {
 	constructor(props) {
 		super(props);
+		debugger;
 
 		this.state = {
-			email: "ignaciocabrera1224@gmail.com",
-			name: "Ignacio Cabrera",
-			password: "123123123",
-			confirmPassword: "123123123",
+			email: "",
+			name: "",
+			password: "",
+			confirmPassword: "",
 			message: null,
 		};
 	}
@@ -82,6 +83,7 @@ class Register extends Component {
 							placeholder="Email *"
 							value={email}
 							onChange={this.changeEmail}
+							required
 						/>
 					</div>
 					<div className="form-group">
@@ -91,6 +93,7 @@ class Register extends Component {
 							placeholder="Nombre"
 							value={name}
 							onChange={this.changename}
+							required
 						/>
 					</div>
 					<div className="form-group">
@@ -100,15 +103,17 @@ class Register extends Component {
 							placeholder="Contraseña *"
 							value={password}
 							onChange={this.changePassword}
+							required
 						/>
 					</div>
 					<div className="form-group">
 						<input
 							type="password"
 							className="form-control"
-							placeholder="Confirmar Contraseña *"
+							placeholder="Confirmar contraseña *"
 							value={confirmPassword}
 							onChange={this.changeConfirmPassword}
+							required
 						/>
 					</div>
 					<div className="form-group">

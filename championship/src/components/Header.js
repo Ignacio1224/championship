@@ -4,30 +4,51 @@ import { faUserAlt, faLock } from "@fortawesome/free-solid-svg-icons";
 import { connect } from "react-redux";
 import { deleteUser } from "../redux/actions/userActions";
 import { deleteChampionship } from "../redux/actions/championshipActions";
+import SweetAlert from 'sweetalert2-react';
 
 class Header extends Component {
 
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			message: null
+		}
 	}
 
 	logOut = () => {
 
-		const { toggleIsLoggedIn } = this.props;
+		const { toggleIsLoggedIn, user: { id } } = this.props;
 
-		this.props.dispatch(
-			deleteUser()
-		);
-		
-		this.props.dispatch(
-			deleteChampionship()
-		);
+		const miInit = {
+			method: "POST",
+			headers: { "Content-type": "application/json" }
+		};
 
-		toggleIsLoggedIn();
+		fetch(`http://taller-frontend.herokuapp.com/api/user/logout/${id}`, miInit)
+		.then(() => {
+			toggleIsLoggedIn();
+
+			this.props.dispatch(
+				deleteUser()
+			);
+
+			this.props.dispatch(
+				deleteChampionship()
+			);
+
+			this.props.history.push("/");
+		})
+		.catch(err => {
+			this.setState({
+				message: { title: "Ha ocurrido un error!", body: "Intente nuevamente y si el error persiste, contácte al administrador del sistema." }
+			});
+		});
 	}
 
 	render() {
 		const { user: { name } } = this.props;
+		const {message} = this.state;
 
 		return (
 			<nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -78,6 +99,15 @@ class Header extends Component {
             			</button>
 					</div>
 				</div>
+				{
+					message &&
+					<SweetAlert
+						show={!!message}
+						title={message.title}
+						text={message.body}
+						onConfirm={() => this.setState({ message: null })}
+					/>
+				}
 			</nav>
 		);
 	}
