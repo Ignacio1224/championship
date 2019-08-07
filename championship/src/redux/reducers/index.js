@@ -1,9 +1,11 @@
 import { combineReducers } from 'redux';
+import championshipReducer from './championshipReducer';
+import userReducer from './userReducer';
 
-import championships from './championshipReducer';
 
 const rootReducer = combineReducers({
-	championships
+	championshipReducer,
+	userReducer
 });
 
 export default rootReducer;

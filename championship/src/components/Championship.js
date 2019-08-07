@@ -9,10 +9,11 @@ class Championship extends Component {
 	}
 
 	render() {
+		const {toggleIsLoggedIn} = this.props;
 
 		return (
 			<>
-			<Header {...this.props} />
+			<Header {...this.props} toggleIsLoggedIn={toggleIsLoggedIn} />
 			<h1>PEPE</h1>
 			</>
 		);

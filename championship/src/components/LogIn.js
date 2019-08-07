@@ -1,8 +1,9 @@
 import React from "react";
 import Register from "./Register";
 import { connect } from "react-redux";
-import { createUser, createChampionship } from "../redux/actions/Actions";
-import { Link } from "react-router-dom";
+import { createUser } from "../redux/actions/userActions";
+import { createChampionship } from "../redux/actions/championshipActions";
+// import { Link } from "react-router-dom";
 
 class LogIn extends React.Component {
   constructor(props) {
@@ -43,9 +44,9 @@ class LogIn extends React.Component {
       fetch("http://taller-frontend.herokuapp.com/api/user/login", miInit)
         .then(resp => resp.json())
         .then(response => {
-
+          
           this.props.dispatch(
-            createUser({ id: response._id, email: response.email })
+            createUser({ id: response._id, email: response.email, name: response.name })
           );
 
           this.props.dispatch(
