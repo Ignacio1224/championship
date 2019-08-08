@@ -4,6 +4,7 @@ import LogIn from "./components/LogIn";
 import Header from "./components/Header";
 import Championship from "./components/Championship";
 import Team from "./components/Team";
+import Match from './components/Match';
 import PageNotFound from "./components/PageNotFound";
 
 class App extends Component {
@@ -13,6 +14,7 @@ class App extends Component {
     this.state = {
       isLoggedIn: false
     };
+
   }
 
   toggleIsLoggedIn = () => {
@@ -22,6 +24,7 @@ class App extends Component {
 
   render() {
     const { isLoggedIn } = this.state;
+    
     return (
       <>
         <Switch>
@@ -49,7 +52,10 @@ class App extends Component {
                   exact
                   path="/team"
                   render={props => <Team {...props} />}
+
                 />
+
+                <Route exact path='/match' render={props => <Match {...props} /> } />
               </div>
             </>
           )}

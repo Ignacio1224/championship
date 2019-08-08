@@ -1,38 +1,43 @@
 /* ------------------------ LOGIN FROM ------------------------ */
-.login-container{
+.login-container {
     margin-top: 5%;
     margin-bottom: 5%;
 }
-.login-form{
+
+.login-form {
     padding: 5%;
     box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
 }
-.login-form h3{
+
+.login-form h3 {
     text-align: center;
     color: #333;
 }
 
-.register-form{
+.register-form {
     padding: 5%;
     background: #191d22;
     box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
 }
-.register-form h3{
+
+.register-form h3 {
     text-align: center;
     color: #fff;
 }
-.login-container form{
+
+.login-container form {
     padding: 10%;
 }
-.btnSubmit
-{
+
+.btnSubmit {
     width: 50%;
     border-radius: 1rem;
     padding: 1.5%;
     border: none;
     cursor: pointer;
 }
-.login-form .btnSubmit{
+
+.login-form .btnSubmit {
     font-weight: 600;
     color: #fff;
     background-color: #191d22;
@@ -42,7 +47,7 @@
     background-color: #2a3036;
 }
 
-.register-form .btnSubmit{
+.register-form .btnSubmit {
     font-weight: 600;
     color: #191d22;
     background-color: #fff;
@@ -60,19 +65,29 @@
 
 .error-template {
     padding: 40px 15px;
-	text-align: center;
+    text-align: center;
 }
 
 .error-actions {
     margin-top: 15px;
-	margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 .error-actions .btn {
     margin-right: 10px;
 }
 
+
 /* ------------------------ ELEMENT ------------------------ */
 .element-active {
     background-color: #f0f0f0
+}
+
+
+/* ------------------------ ELEMENT ------------------------ */
+.custom-alert {
+    position: absolute;
+    top: 0.4em;
+    right: 0.4em;
+    z-index: 1;
 }
