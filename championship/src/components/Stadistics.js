@@ -24,9 +24,9 @@ class Stadistics extends Component {
 
                 <div className='col-12'>
                     <ul className="nav nav-tabs mt-3">
-                        <li className={tab === 'positions' ? 'element-active' : ''}><span className='btn btn-link' id='positions' onClick={this.setTab}>Posiciones</span></li>
-                        <li className={tab === 'scorers' ? 'element-active' : ''}><span className='btn btn-link' id='scorers' onClick={this.setTab}>Goleadores</span></li>
-                        <li className={tab === 'fairPlay' ? 'element-active' : ''}><span className='btn btn-link' id='fairPlay' onClick={this.setTab}>Fair play</span></li>
+                        <li className={`${tab === 'positions' && 'element-active'}`}><span className='btn btn-link' id='positions' onClick={this.setTab}>Posiciones</span></li>
+                        <li className={`${tab === 'scorers' && 'element-active'}`}><span className='btn btn-link' id='scorers' onClick={this.setTab}>Goleadores</span></li>
+                        <li className={`${tab === 'fairPlay' && 'element-active'}`}><span className='btn btn-link' id='fairPlay' onClick={this.setTab}>Fair play</span></li>
                     </ul>
 
                     <div className="tab-content mt-2">
@@ -37,7 +37,7 @@ class Stadistics extends Component {
                                     <table className='mt-1 table table-striped'>
                                         <thead>
                                             <tr>
-                                                <th scope="col">Equipos</th>
+                                                <th scope="col">Equipo</th>
                                                 <th scope="col">Puntos</th>
                                                 <th scope="col">Goles a favor</th>
                                                 <th scope="col">Goles en contra</th>

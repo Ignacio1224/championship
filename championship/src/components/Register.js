@@ -6,7 +6,6 @@ import { connect } from "react-redux";
 class Register extends Component {
 	constructor(props) {
 		super(props);
-		debugger;
 
 		this.state = {
 			email: "",
