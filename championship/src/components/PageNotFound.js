@@ -31,6 +31,9 @@ const PageNotFound = props => {
 									<FontAwesomeIcon icon={faEnvelope} />{' '}
 									Contacta con Soporte{' '}
 								</a>
+								<Link to='/' className='btn btn-link'>
+									Log In
+								</Link>
 							</div>
 						</div>
 					</div>

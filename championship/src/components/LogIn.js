@@ -62,14 +62,15 @@ class LogIn extends React.Component {
 				})
 				.catch(err => {
 					this.setState({
-						message: { message: "Ha ocurrido un error!", classEmail: "danger" }
+						message: { message: "Ha ocurrido un error!", className: "danger" }
 					});
 				});
+				
 		} else {
 			this.setState({
 				message: {
 					message: "Los datos ingresados no son correctos!",
-					classEmail: "danger"
+					className: "danger"
 				}
 			});
 		}
@@ -85,7 +86,7 @@ class LogIn extends React.Component {
 						<form onSubmit={this.login}>
 							{message && (
 								<div
-									className={`alert alert-${message.classEmail}`}
+									className={`alert alert-${message.className}`}
 									role="alert"
 								>
 									{" "}

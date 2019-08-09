@@ -17,6 +17,17 @@ class Player extends Component {
 		};
 	}
 
+	resetState () {
+		this.setState({
+			name: '',
+			surname: '',
+			bornDate: '',
+			numberPlayer: '',
+			added: false,
+			message: null
+		});
+	}
+
 	changeName = ({ target: { value } }) => this.setState({ name: value });
 	changeSurname = ({ target: { value } }) => this.setState({ surname: value });
 	changeBornDate = ({ target: { value } }) =>
@@ -31,7 +42,7 @@ class Player extends Component {
 
 		if (state.name === '' || state.surname === '' || state.bornDate === '' || state.numberPlayer === '') {
 			return this.setState({
-				message: { title: "Oooops!", body: "No se puede ingresar un jugador sin datos." }
+				message: { title: "Oooops!", body: "No se puede ingresar un jugador sin datos.", className:'danger' }
 			});
 		} else {
 			this.setState({ message: null });
@@ -45,6 +56,16 @@ class Player extends Component {
 			bornDate: state.bornDate,
 			numberPlayer: state.numberPlayer
 		});
+
+
+		this.setState({
+			message: { title: "Se haingresado con éxito!", body: "" , className: 'success'}
+		});
+
+		setTimeout(() => {
+			this.setState({message: null});
+		}, 1000);
+
 	};
 
 	render() {
@@ -68,9 +89,9 @@ class Player extends Component {
 						{
 							message && (
 								<div className='custom-alert'>
-									<div className="alert alert-danger alert-dismissible fade show" role="alert">
-										<strong>{message.title}</strong> {message.body}
-										<button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => this.setState({message: null})}>
+									<div className={`alert alert-${message.className} alert-dismissible fade show`} role="alert">
+										<strong>{message.title}</strong> {message.message}
+										<button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => this.setState({ message: null })}>
 											<span aria-hidden="true">&times;</span>
 										</button>
 									</div>

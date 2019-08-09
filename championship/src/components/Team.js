@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import Player from './Player';
+import { createTeam as createtTeamRedux } from '../redux/actions/teamActions';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
@@ -36,7 +37,8 @@ class Team extends Component {
 
 	createTeam = (event) => {
 		event.preventDefault();
-		const { players } = this.state;
+		const { players, name, primaryColour, secondaryColour } = this.state;
+		const { user: {Id} } = this.props;
 
 		if (players.length === 0) {
 			return this.setState({
@@ -44,7 +46,73 @@ class Team extends Component {
 			});
 		}
 
-		alert('do staff');
+		let body = { name, primaryColour, secondaryColour, players: [] }
+		
+		// TODO Se puede mejorar creo
+		players.forEach((p) => {
+			body.players = [...body.players, {name: p.name, lastName: p.surname, birthDate: p.bornDate, number: p.numberPlayer}];
+		});
+
+
+
+		// Hit to API
+
+		const miInit = {
+			method: "POST",
+			headers: { "Content-type": "application/json" },
+			body
+		};
+
+		this.setState({
+			message: { message: "Ingreso existoso!", className: "success" }
+		});
+
+		setTimeout(() => {
+			
+
+			players.forEach((p) => p.resetState());
+
+			this.setState({
+				name: '',
+				primaryColour: '',
+				secondaryColour: '',
+				players: [],
+				message: null
+			});
+			
+		}, 5000);
+
+		console.log(body);
+
+		// fetch(`http://taller-frontend.herokuapp.com/api/team/${Id}`, miInit)
+		// 		.then(resp => resp.json())
+		// 		.then(response => {
+
+		// 			this.props.dispatch(
+		// 				createtTeamRedux({ id: response._id, email: response.email, name: response.name })
+		// 			);
+
+		// 			this.setState({
+		// 				message: { message: "Ingreso existoso!", classEmail: "success" }
+		// 			});
+
+		// 			setTimeout(() => {
+		// 				this.setState({
+		// 					name: '',
+		// 					primaryColour: '',
+		// 					secondaryColour: '',
+		// 					players: [],
+		// 					message: null
+		// 				});
+		// 			}, 1000);
+
+		// 		})
+		// 		.catch(err => {
+		// 			this.setState({
+		// 				message: { message: "Ha ocurrido un error!", classEmail: "danger" }
+		// 			});
+		// 		});
+
 	}
 
 	render() {
@@ -57,8 +125,8 @@ class Team extends Component {
 					{
 						message && (
 							<div className='custom-alert'>
-								<div className="alert alert-danger alert-dismissible fade show" role="alert">
-									<strong>{message.title}</strong> {message.body}
+								<div className={`alert alert-${message.className} alert-dismissible fade show`} role="alert">
+									<strong>{message.title}</strong> {message.message}
 									<button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => this.setState({ message: null })}>
 										<span aria-hidden="true">&times;</span>
 									</button>
