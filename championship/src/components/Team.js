@@ -1,9 +1,9 @@
-import React, { Component, Fragment } from "react";
-import { connect } from "react-redux";
+import React, { Component, Fragment } from 'react';
+import { connect } from 'react-redux';
 import Player from './Player';
-import { createTeam as createtTeamRedux } from '../redux/actions/teamActions';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { createTeam as createTeamRedux } from '../redux/actions/teamActions';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 class Team extends Component {
 	constructor(props) {
@@ -11,11 +11,11 @@ class Team extends Component {
 
 		this.state = {
 			name: '',
-			primaryColour: '',
-			secondaryColour: '',
+			primaryColor: '',
+			secondaryColor: '',
 			players: [],
 			message: null
-		}
+		};
 
 		this.quantPlayers = 10;
 		this.players = [];
@@ -23,150 +23,211 @@ class Team extends Component {
 	}
 
 	changeName = ({ target: { value } }) => this.setState({ name: value });
-	changePrimaryColour = ({ target: { value } }) => this.setState({ primaryColour: value });
-	changeSecondaryColour = ({ target: { value } }) => this.setState({ secondaryColour: value });
+	changePrimaryColor = ({ target: { value } }) =>
+		this.setState({ primaryColor: value });
+	changeSecondaryColor = ({ target: { value } }) =>
+		this.setState({ secondaryColor: value });
 
-	addPlayer = (player) => {
+	addPlayer = player => {
 		this.setState({ players: [...this.state.players, { ...player }] });
-	}
+	};
 
 	loadPlayers = () => {
 		for (let i = 1; i <= this.quantPlayers; i++)
-			this.players.push(<Player {...this.props} index={i} addPlayer={this.addPlayer} />)
-	}
+			this.players.push(
+				<Player {...this.props} index={i} addPlayer={this.addPlayer} />
+			);
+	};
 
-	createTeam = (event) => {
+	createTeam = event => {
 		event.preventDefault();
-		const { players, name, primaryColour, secondaryColour } = this.state;
-		const { user: {Id} } = this.props;
+		const { players, name, primaryColor, secondaryColor } = this.state;
+		const {
+			user: { id }
+		} = this.props;
 
 		if (players.length === 0) {
 			return this.setState({
-				message: { title: "Ha ocurrido un error!", body: "No se puede ingresar un equipo sin jugadores." }
+				message: {
+					title: 'Ha ocurrido un error!',
+					body: 'No se puede ingresar un equipo sin jugadores.'
+				}
 			});
 		}
 
-		let body = { name, primaryColour, secondaryColour, players: [] }
-		
+		let body = { name, primaryColor, secondaryColor, players: [] };
+
 		// TODO Se puede mejorar creo
-		players.forEach((p) => {
-			body.players = [...body.players, {name: p.name, lastName: p.surname, birthDate: p.bornDate, number: p.numberPlayer}];
+		players.forEach(p => {
+			body.players = [
+				...body.players,
+				{
+					name: p.name,
+					lastName: p.surname,
+					birthDate: p.bornDate,
+					number: p.numberPlayer
+				}
+			];
 		});
-
-
 
 		// Hit to API
 
 		const miInit = {
-			method: "POST",
-			headers: { "Content-type": "application/json" },
-			body
+			method: 'POST',
+			headers: { 'Content-type': 'application/json' },
+			body: JSON.stringify(body)
 		};
 
-		this.setState({
-			message: { message: "Ingreso existoso!", className: "success" }
-		});
+		fetch(`http://taller-frontend.herokuapp.com/api/team/${id}`, miInit)
+			.then(resp => resp.json())
+			.then(response => {
+				if (!response.error) {
+					this.props.dispatch(
+						createTeamRedux({
+							id: response._id,
+							email: response.email,
+							name: response.name
+						})
+					);
 
-		setTimeout(() => {
-			
+					setTimeout(() => {
+						this.setState({
+							message: {
+								message: 'Ingreso existoso!',
+								className: 'success'
+							}
+						});
+					}, 1000);
 
-			players.forEach((p) => p.resetState());
-
-			this.setState({
-				name: '',
-				primaryColour: '',
-				secondaryColour: '',
-				players: [],
-				message: null
+					this.setState({
+						name: '',
+						primaryColor: '',
+						secondaryColor: '',
+						players: [],
+						message: null
+					});
+				} else {
+					this.setState({
+						message: {
+							message: 'Ha ocurrido un error!',
+							className: 'danger'
+						}
+					});
+				}
+			})
+			.catch(err => {
+				this.setState({
+					message: {
+						message: 'Ha ocurrido un error!',
+						className: 'danger'
+					}
+				});
 			});
-			
-		}, 5000);
-
-		console.log(body);
-
-		// fetch(`http://taller-frontend.herokuapp.com/api/team/${Id}`, miInit)
-		// 		.then(resp => resp.json())
-		// 		.then(response => {
-
-		// 			this.props.dispatch(
-		// 				createtTeamRedux({ id: response._id, email: response.email, name: response.name })
-		// 			);
-
-		// 			this.setState({
-		// 				message: { message: "Ingreso existoso!", classEmail: "success" }
-		// 			});
-
-		// 			setTimeout(() => {
-		// 				this.setState({
-		// 					name: '',
-		// 					primaryColour: '',
-		// 					secondaryColour: '',
-		// 					players: [],
-		// 					message: null
-		// 				});
-		// 			}, 1000);
-
-		// 		})
-		// 		.catch(err => {
-		// 			this.setState({
-		// 				message: { message: "Ha ocurrido un error!", classEmail: "danger" }
-		// 			});
-		// 		});
-
-	}
+	};
 
 	render() {
-
-		const { name, primaryColour, secondaryColour, message } = this.state;
+		const { name, primaryColor, secondaryColor, message } = this.state;
 
 		return (
-			<div className="row">
-				<div className="col-12">
-					{
-						message && (
-							<div className='custom-alert'>
-								<div className={`alert alert-${message.className} alert-dismissible fade show`} role="alert">
-									<strong>{message.title}</strong> {message.message}
-									<button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => this.setState({ message: null })}>
-										<span aria-hidden="true">&times;</span>
-									</button>
-								</div>
+			<div className='row'>
+				<div className='col-12'>
+					{message && (
+						<div className='custom-alert'>
+							<div
+								className={`alert alert-${
+									message.className
+								} alert-dismissible fade show`}
+								role='alert'
+							>
+								<strong>{message.title}</strong>{' '}
+								{message.message}
+								<button
+									type='button'
+									className='close'
+									data-dismiss='alert'
+									aria-label='Close'
+									onClick={() =>
+										this.setState({ message: null })
+									}
+								>
+									<span aria-hidden='true'>&times;</span>
+								</button>
 							</div>
-						)
-					}
-					<h2 className="text-center">Equipo</h2>
+						</div>
+					)}
+					<h2 className='text-center'>Equipo</h2>
 					<form onSubmit={this.createTeam}>
-						<div className="form-group row">
-							<label htmlFor="inputTeamName" className="col-sm-2 col-form-label">Nombre de equipo</label>
-							<div className="col-sm-10">
-								<input type="text" className="form-control" id="inputTeamName" placeholder="Nombre" value={name} onChange={this.changeName} required />
+						<div className='form-group row'>
+							<label
+								htmlFor='inputTeamName'
+								className='col-sm-2 col-form-label'
+							>
+								Nombre de equipo
+							</label>
+							<div className='col-sm-10'>
+								<input
+									type='text'
+									className='form-control'
+									id='inputTeamName'
+									placeholder='Nombre'
+									value={name}
+									onChange={this.changeName}
+									required
+								/>
 							</div>
 						</div>
-						<div className="form-group row">
-							<label htmlFor="inputClolour" className="col-sm-2 col-form-label">Color de camiseta</label>
-							<div className="col-sm-10">
-								<input type="text" className="form-control" id="inputClolour" placeholder="Titular" value={primaryColour} onChange={this.changePrimaryColour} required />
+						<div className='form-group row'>
+							<label
+								htmlFor='inputClolour'
+								className='col-sm-2 col-form-label'
+							>
+								Color de camiseta
+							</label>
+							<div className='col-sm-10'>
+								<input
+									type='text'
+									className='form-control'
+									id='inputClolour'
+									placeholder='Titular'
+									value={primaryColor}
+									onChange={this.changePrimaryColor}
+									required
+								/>
 							</div>
 						</div>
-						<div className="form-group row">
-							<label htmlFor="inputSecondaryClolour" className="col-sm-2 col-form-label">Color de camiseta</label>
-							<div className="col-sm-10">
-								<input type="text" className="form-control" id="inputSecondaryClolour" placeholder="Alternativa" value={secondaryColour} onChange={this.changeSecondaryColour} />
+						<div className='form-group row'>
+							<label
+								htmlFor='inputSecondaryClolour'
+								className='col-sm-2 col-form-label'
+							>
+								Color de camiseta
+							</label>
+							<div className='col-sm-10'>
+								<input
+									type='text'
+									className='form-control'
+									id='inputSecondaryClolour'
+									placeholder='Alternativa'
+									value={secondaryColor}
+									onChange={this.changeSecondaryColor}
+								/>
 							</div>
 						</div>
 						<div className='form-group'>
-							{
-								this.players.map((e, i) => (
-									<Fragment key={i}>
-										{e}
-									</Fragment>
-								))
-							}
+							{this.players.map((e, i) => (
+								<Fragment key={i}>{e}</Fragment>
+							))}
 						</div>
 
-						<div className="form-group row mt-2">
-							<div className="col-sm-10">
-								<button type="submit" className="btn btn-success"><FontAwesomeIcon icon={faPlus} />Crear</button>
+						<div className='form-group row mt-2'>
+							<div className='col-sm-10'>
+								<button
+									type='submit'
+									className='btn btn-success'
+								>
+									<FontAwesomeIcon icon={faPlus} />
+									Crear
+								</button>
 							</div>
 						</div>
 					</form>

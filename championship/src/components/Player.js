@@ -1,23 +1,23 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 class Player extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			name: "",
-			surname: "",
-			bornDate: "",
-			numberPlayer: "",
+			name: '',
+			surname: '',
+			bornDate: '',
+			numberPlayer: '',
 			added: false,
 			message: null
 		};
 	}
 
-	resetState () {
+	resetState() {
 		this.setState({
 			name: '',
 			surname: '',
@@ -29,7 +29,8 @@ class Player extends Component {
 	}
 
 	changeName = ({ target: { value } }) => this.setState({ name: value });
-	changeSurname = ({ target: { value } }) => this.setState({ surname: value });
+	changeSurname = ({ target: { value } }) =>
+		this.setState({ surname: value });
 	changeBornDate = ({ target: { value } }) =>
 		this.setState({ bornDate: value });
 	changeNumberPlayer = ({ target: { value } }) =>
@@ -40,14 +41,20 @@ class Player extends Component {
 		const { addPlayer } = this.props;
 		const { state } = this;
 
-		if (state.name === '' || state.surname === '' || state.bornDate === '' || state.numberPlayer === '') {
+		if (
+			state.name === '' ||
+			state.surname === '' ||
+			state.bornDate === '' ||
+			state.numberPlayer === ''
+		) {
 			return this.setState({
-				message: { title: "Oooops!", body: "No se puede ingresar un jugador sin datos.", className:'danger' }
+				message: {
+					title: 'Oooops!',
+					body: 'No se puede ingresar un jugador sin datos.',
+					className: 'danger'
+				}
 			});
-		} else {
-			this.setState({ message: null });
 		}
-
 
 		this.setState({ added: true });
 		addPlayer({
@@ -57,15 +64,33 @@ class Player extends Component {
 			numberPlayer: state.numberPlayer
 		});
 
-
 		this.setState({
-			message: { title: "Se haingresado con éxito!", body: "" , className: 'success'}
+			message: {
+				title: 'Se haingresado con éxito!',
+				body: '',
+				className: 'success'
+			}
 		});
 
 		setTimeout(() => {
-			this.setState({message: null});
-		}, 1000);
+			this.setState({ message: null });
+		}, 2000);
+	};
 
+	maxDate = () => {
+		const today = new Date();
+		const dd = String(today.getDate()).padStart(2, '0');
+		const mm = String(today.getMonth() + 1).padStart(2, '0');
+		const yyyy = today.getFullYear();
+		return `${yyyy}-${mm}-${dd}`;
+	};
+
+	minDate = () => {
+		const today = new Date();
+		const dd = String(today.getDate()).padStart(2, '0');
+		const mm = String(today.getMonth() + 1).padStart(2, '0');
+		const yyyy = today.getFullYear() - 100;
+		return `${yyyy}-${mm}-${dd}`;
 	};
 
 	render() {
@@ -80,92 +105,106 @@ class Player extends Component {
 		const { index } = this.props;
 
 		return (
-			<div className="card mt-2">
-				<div className="card-body">
-					<div className="card-title">
-						<h3 className="text-justified">{`Jugador ${index}`}</h3>
+			<div className='card mt-2'>
+				<div className='card-body'>
+					<div className='card-title'>
+						<h3 className='text-justified'>{`Jugador ${index}`}</h3>
 					</div>
-					<div className="card-text">
-						{
-							message && (
-								<div className='custom-alert'>
-									<div className={`alert alert-${message.className} alert-dismissible fade show`} role="alert">
-										<strong>{message.title}</strong> {message.message}
-										<button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => this.setState({ message: null })}>
-											<span aria-hidden="true">&times;</span>
-										</button>
-									</div>
+					<div className='card-text'>
+						{message && (
+							<div className='custom-alert'>
+								<div
+									className={`alert alert-${
+										message.className
+									} alert-dismissible fade show`}
+									role='alert'
+								>
+									<strong>{message.title}</strong>{' '}
+									{message.message}
+									<button
+										type='button'
+										className='close'
+										data-dismiss='alert'
+										aria-label='Close'
+										onClick={() =>
+											this.setState({ message: null })
+										}
+									>
+										<span aria-hidden='true'>&times;</span>
+									</button>
 								</div>
-							)
-						}
-						<div className="form-group row">
+							</div>
+						)}
+						<div className='form-group row'>
 							<label
 								htmlFor={`inputPlayerName${index}`}
-								className="col-sm-2 col-form-label"
+								className='col-sm-2 col-form-label'
 							>
 								Nombre del jugador
-              				</label>
-							<div className="col-sm-10">
+							</label>
+							<div className='col-sm-10'>
 								<input
-									type="text"
-									className="form-control"
+									type='text'
+									className='form-control'
 									id={`inputPlayerName${index}`}
-									placeholder="Nombre"
+									placeholder='Nombre'
 									value={name}
 									onChange={this.changeName}
 								/>
 							</div>
 						</div>
-						<div className="form-group row">
+						<div className='form-group row'>
 							<label
 								htmlFor={`inputSurname${index}`}
-								className="col-sm-2 col-form-label"
+								className='col-sm-2 col-form-label'
 							>
 								Apellido
-              				</label>
-							<div className="col-sm-10">
+							</label>
+							<div className='col-sm-10'>
 								<input
-									type="text"
-									className="form-control"
+									type='text'
+									className='form-control'
 									id={`inputSurname${index}`}
-									placeholder="Apellido"
+									placeholder='Apellido'
 									value={surname}
 									onChange={this.changeSurname}
 								/>
 							</div>
 						</div>
-						<div className="form-group row">
+						<div className='form-group row'>
 							<label
 								htmlFor={`inputPlayerBornDate${index}`}
-								className="col-sm-2 col-form-label"
+								className='col-sm-2 col-form-label'
 							>
 								Fecha de nacimiento
-              				</label>
-							<div className="col-sm-10">
+							</label>
+							<div className='col-sm-10'>
 								<input
-									type="date"
-									className="form-control"
+									type='date'
+									className='form-control'
 									id={`inputPlayerBornDate${index}`}
-									placeholder="Fecha de nacimiento"
+									placeholder='Fecha de nacimiento'
 									value={bornDate}
 									onChange={this.changeBornDate}
+									max={this.maxDate()}
+									min={this.minDate()}
 								/>
 							</div>
 						</div>
-						<div className="form-group row">
+						<div className='form-group row'>
 							<label
 								htmlFor={`inputPlayerNumber${index}`}
-								className="col-sm-2 col-form-label"
+								className='col-sm-2 col-form-label'
 							>
 								Número de camiseta
-              				</label>
-							<div className="col-sm-10">
+							</label>
+							<div className='col-sm-10'>
 								<input
-									type="number"
-									min="1"
-									className="form-control"
+									type='number'
+									min='1'
+									className='form-control'
 									id={`inputPlayerNumber${index}`}
-									placeholder="Número de camiseta"
+									placeholder='Número de camiseta'
 									value={numberPlayer}
 									onChange={this.changeNumberPlayer}
 								/>
@@ -174,20 +213,19 @@ class Player extends Component {
 					</div>
 				</div>
 				{!added && (
-					<div className="form-group row mt-2">
-						<div className="col-sm-11 text-right">
+					<div className='form-group row mt-2'>
+						<div className='col-sm-11 text-right'>
 							<button
-								type="submit"
-								className="btn btn-success"
+								type='submit'
+								className='btn btn-success'
 								onClick={this.createPlayer}
 							>
 								<FontAwesomeIcon icon={faPlus} />
 								Agregar
-              				</button>
+							</button>
 						</div>
 					</div>
 				)}
-
 			</div>
 		);
 	}
