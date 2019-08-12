@@ -14,11 +14,11 @@ class Team extends Component {
 			primaryColor: '',
 			secondaryColor: '',
 			players: [],
-			message: null
+			message: null,
+			quantPlayers: 10,
+			playersArr: []
 		};
 
-		this.quantPlayers = 10;
-		this.players = [];
 		this.loadPlayers();
 	}
 
@@ -33,8 +33,8 @@ class Team extends Component {
 	};
 
 	loadPlayers = () => {
-		for (let i = 1; i <= this.quantPlayers; i++)
-			this.players.push(
+		for (let i = 1; i <= this.state.quantPlayers; i++)
+			this.state.playersArr.push(
 				<Player {...this.props} index={i} addPlayer={this.addPlayer} />
 			);
 	};
@@ -104,8 +104,10 @@ class Team extends Component {
 						primaryColor: '',
 						secondaryColor: '',
 						players: [],
-						message: null
+						message: null,
+						playersArr: []
 					});
+					this.loadPlayers();
 				} else {
 					this.setState({
 						message: {
@@ -214,7 +216,7 @@ class Team extends Component {
 							</div>
 						</div>
 						<div className='form-group'>
-							{this.players.map((e, i) => (
+							{this.state.playersArr.map((e, i) => (
 								<Fragment key={i}>{e}</Fragment>
 							))}
 						</div>

@@ -4,8 +4,7 @@ export default function championshipReducer(state = {}, action) {
 			return { ...state, championship: action.championship };
 
 		case 'DELETE_CHAMPIONSHIP':
-			delete state.championship;
-			return { ...state };
+			return { ...state, championship: {} };
 
 		default:
 			return state;

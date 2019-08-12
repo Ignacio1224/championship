@@ -24,7 +24,8 @@ class App extends Component {
 
   render() {
     const { isLoggedIn } = this.state;
-    
+    const { history } = this.props;
+    ;
     return (
       <>
         <Switch>
@@ -37,7 +38,7 @@ class App extends Component {
           />
           {isLoggedIn && (
             <>
-              <Header {...this.props} toggleIsLoggedIn={this.toggleIsLoggedIn} />
+              <Header history={history} toggleIsLoggedIn={this.toggleIsLoggedIn} />
               <div className="container mt-5">
                 <Route
                   exact

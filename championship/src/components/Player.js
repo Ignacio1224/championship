@@ -13,7 +13,8 @@ class Player extends Component {
 			bornDate: '',
 			numberPlayer: '',
 			added: false,
-			message: null
+			message: null,
+			disableFields: ''
 		};
 	}
 
@@ -69,7 +70,8 @@ class Player extends Component {
 				title: 'Se haingresado con éxito!',
 				body: '',
 				className: 'success'
-			}
+			},
+			disableFields: 'disabled'
 		});
 
 		setTimeout(() => {
@@ -100,10 +102,11 @@ class Player extends Component {
 			bornDate,
 			numberPlayer,
 			added,
-			message
+			message,
+			disableFields
 		} = this.state;
 		const { index } = this.props;
-
+		
 		return (
 			<div className='card mt-2'>
 				<div className='card-body'>
@@ -150,6 +153,7 @@ class Player extends Component {
 									placeholder='Nombre'
 									value={name}
 									onChange={this.changeName}
+									disabled={disableFields}
 								/>
 							</div>
 						</div>
@@ -168,6 +172,7 @@ class Player extends Component {
 									placeholder='Apellido'
 									value={surname}
 									onChange={this.changeSurname}
+									disabled={disableFields}
 								/>
 							</div>
 						</div>
@@ -188,6 +193,7 @@ class Player extends Component {
 									onChange={this.changeBornDate}
 									max={this.maxDate()}
 									min={this.minDate()}
+									disabled={disableFields}
 								/>
 							</div>
 						</div>
@@ -207,6 +213,7 @@ class Player extends Component {
 									placeholder='Número de camiseta'
 									value={numberPlayer}
 									onChange={this.changeNumberPlayer}
+									disabled={disableFields}
 								/>
 							</div>
 						</div>

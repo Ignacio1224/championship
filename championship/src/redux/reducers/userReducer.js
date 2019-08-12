@@ -4,8 +4,7 @@ export default function userReducer(state = {}, action) {
             return { ...state, user: action.user };
 
         case 'DELETE_USER':
-            delete state.user;
-            return {...state}
+            return {...state, user: {}}
 
         default:
             return state;

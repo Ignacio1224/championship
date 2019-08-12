@@ -1,9 +1,9 @@
 import React from 'react';
 import Register from './Register';
 import { connect } from 'react-redux';
-import { createUser } from '../redux/actions/userActions';
-import { createChampionship } from '../redux/actions/championshipActions';
-import { createTeam } from '../redux/actions/teamActions';
+import { createUser, deleteUser } from '../redux/actions/userActions';
+import { createChampionship, deleteChampionship } from '../redux/actions/championshipActions';
+import { createTeam, deleteTeam } from '../redux/actions/teamActions';
 // import { Link } from "react-router-dom";
 
 class LogIn extends React.Component {
@@ -17,7 +17,38 @@ class LogIn extends React.Component {
 			userId: null,
 			championshipId: null
 		};
+
+		this.logOut();
 	}
+
+	logOut() {
+		const {
+			user,
+			toggleIsLoggedIn
+		} = this.props;
+
+		if (user) {
+
+			const miInit = {
+				method: 'POST',
+				headers: { 'Content-type': 'application/json' }
+			};
+	
+			fetch(
+				`http://taller-frontend.herokuapp.com/api/user/logout/${user.id}`,
+				miInit
+			)
+				.then(() => {
+	
+					toggleIsLoggedIn();
+					this.props.dispatch(deleteTeam(), deleteChampionship(), deleteUser());
+	
+				})
+				.catch(err => {
+					console.log(err)
+				});
+		}
+	};
 
 	setUserId = userId => this.setState({ userId });
 	setChampionshipId = championshipId => this.setState({ championshipId });
@@ -109,6 +140,7 @@ class LogIn extends React.Component {
 
 	render() {
 		const { email, password, message } = this.state;
+		;
 		return (
 			<div className='container login-container'>
 				<div className='row'>

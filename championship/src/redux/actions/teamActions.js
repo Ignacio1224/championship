@@ -5,6 +5,13 @@ function createTeam(team) {
 	};
 }
 
+function deleteTeam(team) {
+	return {
+		type: 'DELETE_TEAM',
+		team
+	};
+}
+
 function addPositions(positions) {
 	return {
 		type: 'ADD_POSITIONS',
@@ -26,4 +33,4 @@ function addFairPlay(fairPlay) {
 	};
 }
 
-export { createTeam, addPositions, addScorers, addFairPlay };
+export { createTeam, deleteTeam, addPositions, addScorers, addFairPlay };
