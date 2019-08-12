@@ -14,30 +14,29 @@ class Match extends Component {
       team1: "",
       team2: "",
       matchEventsT1: [],
-	  matchEventsT2: [],
+      matchEventsT2: [],
+      unavailableTeams: []
     };
-	
-	this.unavailableTeams = [];
   }
 
   changeTeam1 = ({ target: { value } }) => {
-		this.setState({ team1: value });
-		this.unavailableTeams = [...this.unavailableTeams, value];
-	};
+    this.setState({ team1: value, team2: '', unavailableTeams: [...this.state.unavailableTeams, value] });
+    if (this.state.unavailableTeams.length > 0) {
+      this.setState({ unavailableTeams: [value] });
+    }
+  };
 
   changeTeam2 = ({ target: { value } }) => this.setState({ team2: value });
 
   availableTeams = () => {
     const {
       team: { teams }
-	} = this.props;
-	
-	let avialiable = [];
+    } = this.props;
 
-	this.unavailableTeams = [];
+    let avialiable = [];
 
-    teams.forEach(t => {
-      if (!this.unavailableTeams.includes(t._id))
+    teams.forEach((t, i) => {
+      if (!this.state.unavailableTeams.includes(t._id))
         avialiable = [...avialiable, t];
     });
 
@@ -76,16 +75,15 @@ class Match extends Component {
         }
       });
     }
-    console.log(team1, team2);
+    // console.log(team1, team2);
   };
 
   addEventT1 = ev => {
-	this.setState([...this.state.matchEventsT1, { matchEventsT1: { ...ev } }]);
-	console.log(ev);
+    this.setState({ matchEventsT1: [...this.state.matchEventsT1, { ...ev }] });
   };
 
   addEventT2 = ev => {
-    this.setState([...this.state.matchEventsT2, { matchEventsT2: { ...ev } }]);
+    this.setState({ matchEventsT2: [...this.state.matchEventsT2, { ...ev }] });
   };
 
   render() {
@@ -95,9 +93,9 @@ class Match extends Component {
     } = this.props;
 
     const { team1, team2, message, matchEventsT1, matchEventsT2 } = this.state;
-	const avTeams = this.availableTeams();
-	console.log('Unavailable teams', avTeams);
-	
+    const avTeams = this.availableTeams();
+    console.log(matchEventsT1);
+
 
     let isConfirmed = true; // TODO HARCODED!!!
 
@@ -157,20 +155,30 @@ class Match extends Component {
                   </>
                 )}
               </div>
-              <div className="col-5">
-                {matchEventsT1.length > 0 && matchEventsT1.map((e, i) => (
-                  <div key={i} className="alert alert-primary" role='alert'>
-                    {e.minute} - {e.mEvent}
+              {
+                (matchEventsT1.length > 0 || matchEventsT2.length > 0) && (
+                  <div className='col-12 mt-2'>
+                    <h5 className='text-center'>Eventos registrados</h5>
+                    
+                    <div className="col-5">
+                      {matchEventsT1.map((e, i) => (
+                        <div key={i} className="alert alert-primary" role='alert'>
+                          {e.minute} - {e.mEvent}
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="col-5 offset-1">
+                      {matchEventsT2.map((e, i) => (
+                        <div key={i} className="alert alert-primary" role='alert'>
+                          {e.minute} - {e.mEvent}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
-              </div>
-              <div className="col-5 offset-1">
-                {matchEventsT2.length > 0 && matchEventsT2.map((e, i) => (
-                  <div key={i} className="alert alert-primary" role='alert'>
-                    {e.minute} - {e.mEvent}
-                  </div>
-                ))}
-              </div>
+                )
+              }
+              
               <div className="form-group row mt-2">
                 <div className="col-sm-10">
                   <button type="submit" className="btn btn-success">
@@ -185,7 +193,7 @@ class Match extends Component {
                   <div
                     className={`alert alert-${
                       message.className
-                    } alert-dismissible fade show`}
+                      } alert-dismissible fade show`}
                     role="alert"
                   >
                     <strong>{message.title}</strong> {message.message}
@@ -207,8 +215,8 @@ class Match extends Component {
               )}
             </form>
           ) : (
-            <h1>No se ha iniciado el campeonato!.</h1>
-          )}
+              <h1>No se ha iniciado el campeonato!.</h1>
+            )}
         </div>
       </div>
     );

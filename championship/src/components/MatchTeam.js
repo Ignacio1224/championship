@@ -72,7 +72,7 @@ class MatchTeam extends Component {
     const {
       team: { name, players }
 	} = this.props;
-	console.log(players);
+	// console.log(players);
 	
 
     return (
@@ -105,10 +105,10 @@ class MatchTeam extends Component {
                 </div>
               )}
               <div className="form-group">
-                <label htmlFor={`selectMatchPlayer${name.replace(/\s/g, '')}`}>Jugador</label>
+                <label htmlFor={`selectMatchPlayer${player.number}`}>Jugador</label>
                 <select
                   className="form-control"
-                  id={`selectMatchPlayer${name.replace(/\s/g, '')}`}
+                  id={`selectMatchPlayer${player.number}`}
                   onChange={this.changePlayer}
                   value={player}
                 >
@@ -116,16 +116,16 @@ class MatchTeam extends Component {
                   {players.map((p, index) => (
                     <option
                       key={index}
-                      value={`${p.name}-${p.lastname}-${p.number}`}
+                      value={p.number}
                     >
-                      {p.name} {p.lastname} --> {p.number}
+                      Nombre: {p.name} Apellido: {p.lastName} Nº camiseta: {p.number}
                     </option>
                   ))}
                 </select>
-                <label htmlFor={`selectMinute${name.replace(/\s/g, '')}`}>Minuto</label>
+                <label htmlFor={`selectMinute${player.number}`}>Minuto</label>
                 <select
                   className="form-control"
-                  id={`selectMinute${name.replace(/\s/g, '')}`}
+                  id={`selectMinute${player.number}`}
                   onChange={this.changeMinute}
                   value={minute}
                 >
@@ -136,10 +136,10 @@ class MatchTeam extends Component {
                     </option>
                   ))}
                 </select>
-                <label htmlFor={`selectEvent${name.replace(/\s/g, '')}`}>Evento</label>
+                <label htmlFor={`selectEvent${player.minute}`}>Evento</label>
                 <select
                   className="form-control"
-                  id={`selectEvent${name.replace(/\s/g, '')}`}
+                  id={`selectEvent${player.minute}`}
                   onChange={this.changeEvent}
                   value={mEvent}
                 >
