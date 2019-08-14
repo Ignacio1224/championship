@@ -2,7 +2,11 @@ import React from 'react';
 import Register from './Register';
 import { connect } from 'react-redux';
 import { createUser, deleteUser } from '../redux/actions/userActions';
-import { createChampionship, deleteChampionship } from '../redux/actions/championshipActions';
+import {
+	createChampionship,
+	deleteChampionship,
+	createMatches
+} from '../redux/actions/championshipActions';
 import { createTeam, deleteTeam } from '../redux/actions/teamActions';
 // import { Link } from "react-router-dom";
 
@@ -22,32 +26,122 @@ class LogIn extends React.Component {
 	}
 
 	logOut() {
-		const {
-			user,
-			toggleIsLoggedIn
-		} = this.props;
+		const { user, toggleIsLoggedIn } = this.props;
 
 		if (user) {
-
 			const miInit = {
 				method: 'POST',
 				headers: { 'Content-type': 'application/json' }
 			};
-	
+
 			fetch(
-				`http://taller-frontend.herokuapp.com/api/user/logout/${user.id}`,
+				`http://taller-frontend.herokuapp.com/api/user/logout/${
+					user.id
+				}`,
 				miInit
 			)
 				.then(() => {
-	
 					toggleIsLoggedIn();
-					this.props.dispatch(deleteTeam(), deleteChampionship(), deleteUser());
-	
+					this.props.dispatch(
+						deleteTeam(),
+						deleteChampionship(),
+						deleteUser()
+					);
 				})
-				.catch(err => {
-					
-				});
+				.catch(err => {});
 		}
+	}
+
+	loadMatchesHit = championshipId => {
+		const miInit = {
+			method: 'GET',
+			headers: { 'Content-type': 'application/json' }
+		};
+
+		return fetch(
+			`http://taller-frontend.herokuapp.com/api/match/getAllByChampionshipId/${championshipId}`,
+			miInit
+		)
+			.then(resp => resp.json())
+			.then(response => {
+				if (!response.error) {
+					this.props.dispatch(createMatches([...response]));
+				}
+			});
+	};
+
+	logInHit = (email, password) => {
+		const miInit = {
+			method: 'POST',
+			headers: { 'Content-type': 'application/json' },
+			body: JSON.stringify({
+				email,
+				password
+			})
+		};
+
+		fetch('http://taller-frontend.herokuapp.com/api/user/login', miInit)
+			.then(resp => resp.json())
+			.then(response => {
+				this.props.dispatch(
+					createUser({
+						id: response._id,
+						email: response.email,
+						name: response.name
+					})
+				);
+
+				this.props.dispatch(
+					createChampionship({
+						id: response.championship._id,
+						isConfirmed: response.championship.isConfirmed
+					})
+				);
+
+				this.loadTeamsHit(response.championship._id).then(() => {
+					this.loadMatchesHit(response.championship._id).then(() => {
+						const { toggleIsLoggedIn } = this.props;
+						toggleIsLoggedIn();
+						this.setState({
+							email: '',
+							password: ''
+						});
+						this.props.history.push('/championship');
+					});
+				});
+			})
+			.catch(err => {
+				this.setState({
+					message: {
+						message: 'Ha ocurrido un error!',
+						className: 'danger'
+					}
+				});
+			});
+	};
+
+	loadTeamsHit = championshipId => {
+		return fetch(
+			`http://taller-frontend.herokuapp.com/api/team/getAllByChampionshipId/${championshipId}`,
+			{
+				method: 'GET',
+				headers: {
+					'Content-type': 'application/json'
+				}
+			}
+		)
+			.then(resC => resC.json())
+			.then(responseC => {
+				if (!responseC.error) {
+					responseC.forEach(t => {
+						this.props.dispatch(
+							createTeam({
+								...t
+							})
+						);
+					});
+				}
+			});
 	};
 
 	setUserId = userId => this.setState({ userId });
@@ -61,73 +155,9 @@ class LogIn extends React.Component {
 	login = event => {
 		event.preventDefault();
 		const { email, password } = this.state;
-		const { toggleIsLoggedIn } = this.props;
 
 		if (email !== '' && password !== '') {
-			const miInit = {
-				method: 'POST',
-				headers: { 'Content-type': 'application/json' },
-				body: JSON.stringify({
-					email,
-					password
-				})
-			};
-
-			fetch('http://taller-frontend.herokuapp.com/api/user/login', miInit)
-				.then(resp => resp.json())
-				.then(response => {
-					this.props.dispatch(
-						createUser({
-							id: response._id,
-							email: response.email,
-							name: response.name
-						})
-					);
-
-					this.props.dispatch(
-						createChampionship({
-							id: response.championship._id,
-							isConfirmed: response.championship.isConfirmed
-						})
-					);
-
-					fetch(
-						`http://taller-frontend.herokuapp.com/api/team/getAllByChampionshipId/${
-							response.championship._id
-						}`,
-						{
-							method: 'GET',
-							headers: {
-								'Content-type': 'application/json'
-							}
-						}
-					)
-						.then(resC => resC.json())
-						.then(responseC => {
-							if (!responseC.error) {
-								responseC.forEach(t => {
-									this.props.dispatch(
-										createTeam({
-											...t
-										})
-									);
-								});
-							}
-						})
-						.then(() => {
-							toggleIsLoggedIn();
-							this.setState({ email: '', password: '' });
-							this.props.history.push('/championship');
-						});
-				})
-				.catch(err => {
-					this.setState({
-						message: {
-							message: 'Ha ocurrido un error!',
-							className: 'danger'
-						}
-					});
-				});
+			this.logInHit(email, password);
 		} else {
 			this.setState({
 				message: {
@@ -140,7 +170,6 @@ class LogIn extends React.Component {
 
 	render() {
 		const { email, password, message } = this.state;
-		;
 		return (
 			<div className='container login-container'>
 				<div className='row'>

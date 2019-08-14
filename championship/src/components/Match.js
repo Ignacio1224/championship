@@ -11,41 +11,15 @@ class Match extends Component {
 		this.state = {
 			message: null,
 
+			teamVsTeam: '',
 			team1: '',
 			team2: '',
-			matchEventsT1: [],
-			matchEventsT2: [],
-			unavailableTeams: []
+			events: [],
+			playersT1: [],
+			playersT2: [],
+			totalGoals: []
 		};
 	}
-
-	changeTeam1 = ({ target: { value } }) => {
-		this.setState({
-			team1: value,
-			team2: '',
-			unavailableTeams: [...this.state.unavailableTeams, value]
-		});
-		if (this.state.unavailableTeams.length > 0) {
-			this.setState({ unavailableTeams: [value] });
-		}
-	};
-
-	changeTeam2 = ({ target: { value } }) => this.setState({ team2: value });
-
-	availableTeams = () => {
-		const {
-			team: { teams }
-		} = this.props;
-
-		let avialiable = [];
-
-		teams.forEach((t, i) => {
-			if (!this.state.unavailableTeams.includes(t._id))
-				avialiable = [...avialiable, t];
-		});
-
-		return avialiable;
-	};
 
 	getTeam = teamId => {
 		const {
@@ -57,19 +31,86 @@ class Match extends Component {
 		}
 	};
 
+	loadInitialPlayers1 = p => {
+		this.setState({ playersT1: [...this.state.playersT1, p] });
+	};
+
+	loadInitialPlayers2 = p => {
+		this.setState({ playersT2: [...this.state.playersT2, p] });
+	};
+
+	addTotalGoals = obj => {
+		this.setState({ totalGoals: [...this.state.totalGoals, { ...obj }] });
+	};
+
 	createMatch = event => {
 		event.preventDefault();
 
-		const { team1, team2, matchEventsT1, matchEventsT2 } = this.state;
+		const {
+			team1,
+			team2,
+			playersT1,
+			playersT2,
+			// totalGoals,
+			teamVsTeam,
+			events
+		} = this.state;
 
 		if (team1 !== '' && team2 !== '') {
-			this.setState({
-				message: {
-					className: 'success',
-					title: 'Sapee!',
-					message: 'Pin y verde pari!'
-				}
-			});
+			const miInit = {
+				method: 'PUT',
+				headers: { 'Content-type': 'application/json' },
+				body: JSON.stringify({
+					team1: {
+						id: team1,
+						players: playersT1
+					},
+					team2: {
+						id: team2,
+						players: playersT2
+					},
+					events
+					// _id: teamVsTeam,
+					// championshipId: this.props.championship.championship.id
+				})
+			};
+
+			// ERROR
+			fetch(
+				`http://taller-frontend.herokuapp.com/api/match/${teamVsTeam}`,
+				miInit
+			)
+				.then(res => res.json())
+				.then(response => {
+					if (!response.error) {
+						this.setState({
+							message: {
+								className: 'success',
+								title: 'Ok!',
+								message: 'Juego añadido!'
+							}
+						});
+					} else {
+						this.setState({
+							message: {
+								className: 'danger',
+								title: 'Error!',
+								message: response.error
+							}
+						});
+					}
+				})
+				.catch(err => {
+					console.log(err);
+
+					// this.setState({
+					// 	message: {
+					// 		className: 'danger',
+					// 		title: 'Error!',
+					// 		message: err
+					// 	}
+					// });
+				});
 		} else {
 			this.setState({
 				message: {
@@ -79,38 +120,37 @@ class Match extends Component {
 				}
 			});
 		}
-		console.log(matchEventsT1, matchEventsT2);
 	};
 
-	addEventT1 = ev => {
+	addEvents = ev => {
 		this.setState({
-			matchEventsT1: [...this.state.matchEventsT1, { ...ev }]
+			events: [...this.state.events, { ...ev }]
 		});
 	};
 
-	addEventT2 = ev => {
+	changeTeamVsTeam = ({ target: { value } }) => {
+		const { matches } = this.props.championship;
+
+		let matchesFiltered = matches.filter(m => {
+			return m._id === value;
+		})[0];
+
 		this.setState({
-			matchEventsT2: [...this.state.matchEventsT2, { ...ev }]
+			teamVsTeam: value,
+			team1: matchesFiltered.team1.id,
+			team2: matchesFiltered.team2.id
 		});
 	};
 
 	render() {
 		const {
-			//   championship: { isConfirmed }
-			team: { teams }
+			championship: {
+				championship: { isConfirmed },
+				matches
+			}
 		} = this.props;
 
-		const {
-			team1,
-			team2,
-			message
-			// matchEventsT1,
-			// matchEventsT2
-		} = this.state;
-		const avTeams = this.availableTeams();
-		// console.log(matchEventsT1);
-
-		let isConfirmed = true; // TODO HARCODED!!!
+		const { teamVsTeam, message, team1, team2 } = this.state;
 
 		return (
 			<div className='row'>
@@ -121,41 +161,18 @@ class Match extends Component {
 					{isConfirmed ? (
 						<form onSubmit={this.createMatch}>
 							<div className='row'>
-								<div className='form-group col-5'>
-									<label htmlFor='selectMatchTeam1'>
-										Equipo 1
-									</label>
+								<div className='col-6 offset-3 mb-3'>
 									<select
 										className='form-control'
-										id='selectMatchTeam1'
-										onChange={this.changeTeam1}
-										value={team1}
+										value={teamVsTeam}
+										onChange={this.changeTeamVsTeam}
 									>
-										<option value=''>------</option>
-										{teams.map((tmp, index) => (
-											<option key={index} value={tmp._id}>
-												{tmp.name}
-											</option>
-										))}
-									</select>
-								</div>
-								<div className='form-group col-5 offset-1'>
-									<label htmlFor='selectMatchTeam2'>
-										Equipo 2
-									</label>
-									<select
-										className='form-control'
-										id='selectMatchTeam2'
-										onChange={this.changeTeam2}
-										value={team2}
-										disabled={
-											avTeams.length === teams.length
-										}
-									>
-										<option value=''>------</option>
-										{avTeams.map((tmp, index) => (
-											<option key={index} value={tmp._id}>
-												{tmp.name}
+										<option>------</option>
+										{matches.map((m, i) => (
+											<option key={i} value={m._id}>
+												{this.getTeam(m.team1.id).name}
+												{' VS '}
+												{this.getTeam(m.team2.id).name}
 											</option>
 										))}
 									</select>
@@ -165,45 +182,23 @@ class Match extends Component {
 									<>
 										<MatchTeam
 											team={this.getTeam(team1)}
-											addEvent={this.addEventT1}
+											addEvent={this.addEvents}
+											loadInitialPlayers={
+												this.loadInitialPlayers1
+											}
+											addTotalGoals={this.addTotalGoals}
 										/>
 										<MatchTeam
 											team={this.getTeam(team2)}
-											addEvent={this.addEventT2}
+											addEvent={this.addEvents}
+											loadInitialPlayers={
+												this.loadInitialPlayers2
+											}
+											addTotalGoals={this.addTotalGoals}
 										/>
 									</>
 								)}
 							</div>
-
-							{/* {(matchEventsT1.length > 0 ||
-								matchEventsT2.length > 0) && (
-								<div className='row mt-2'>
-									<div className='col-12 mt-2'>
-										<h5 className='text-center'>
-											Eventos registrados
-										</h5>
-									</div>
-									{matchEventsT1.map((e, i) => (
-										<div
-											key={i}
-											className='col-5 alert alert-primary'
-											role='alert'
-										>
-											{e.minute} - {e.mEvent}
-										</div>
-									))}
-
-									{matchEventsT2.map((e, i) => (
-										<span
-											key={i}
-											className='col-5 offset-1 alert alert-primary'
-											role='alert'
-										>
-											{e.minute} - {e.mEvent}
-										</span>
-									))}
-								</div>
-							)} */}
 
 							<div className='form-group row mt-2'>
 								<div className='col-sm-10'>
@@ -258,7 +253,7 @@ class Match extends Component {
 function mapStateToProps(state) {
 	return {
 		user: state.userReducer.user,
-		championship: state.championshipReducer.championship,
+		championship: state.championshipReducer,
 		team: state.teamReducer
 	};
 }

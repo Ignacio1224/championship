@@ -12,9 +12,13 @@ class MatchTeam extends Component {
 			// {player: id, time: time, event}
 			// event could be ('goal, yellow card, red card')
 			teamPlayers: [],
+			availablePlayers: [...props.team.players], // TODO: Not updating at change cmbx
+			pp: '',
 			player: '',
 			minute: '',
-			mEvent: ''
+			mEvent: '',
+			totalGoals: 0,
+			tgUpdated: false
 		};
 
 		this.matchEvents = ['Gol', 'Tarjeta amarilla', 'Expulsión'];
@@ -27,7 +31,7 @@ class MatchTeam extends Component {
 	addLine = event => {
 		event.preventDefault();
 
-		const { player, minute, mEvent } = this.state;
+		let { player, minute, mEvent } = this.state;
 		const { addEvent } = this.props;
 
 		if (player === '' || minute === '' || mEvent === '') {
@@ -38,6 +42,16 @@ class MatchTeam extends Component {
 					className: 'danger'
 				}
 			});
+		}
+
+		if (mEvent === this.matchEvents[0]) {
+			mEvent = 'GOAL';
+		}
+		if (mEvent === this.matchEvents[1]) {
+			mEvent = 'YELLOW_CARD';
+		}
+		if (mEvent === this.matchEvents[2]) {
+			mEvent = 'RED_CARD';
 		}
 
 		addEvent({
@@ -58,8 +72,57 @@ class MatchTeam extends Component {
 		});
 	};
 
+	changeTeamPlayer = ({ target: { value } }) => {
+		this.setState({ pp: value });
+	};
+
+	changeTotalGoals = ({ target: { value } }) =>
+		this.setState({ totalGoals: value });
+
+	addTotalGoals = event => {
+		event.preventDefault();
+		const { addTotalGoals } = this.props;
+
+		addTotalGoals({
+			goals: this.state.totalGoals,
+			team: this.props.team._id
+		});
+
+		this.setState({ tgUpdated: true });
+	};
+
+	addPlayer = event => {
+		event.preventDefault();
+		this.setState({
+			teamPlayers: [...this.state.teamPlayers, this.state.pp]
+		});
+		this.loadAvailablePlayers(this.state.pp);
+	};
+
+	loadAvailablePlayers = player => {
+		const { loadInitialPlayers } = this.props;
+
+		this.setState({
+			availablePlayers: [
+				...this.state.availablePlayers.filter(p =>
+					player ? p._id !== player : p._id
+				)
+			]
+		});
+		loadInitialPlayers(player);
+	};
+
 	render() {
-		const { player, minute, mEvent, message } = this.state;
+		const {
+			pp,
+			availablePlayers,
+			player,
+			minute,
+			mEvent,
+			message,
+			totalGoals,
+			tgUpdated
+		} = this.state;
 
 		const {
 			team: { name, players }
@@ -89,7 +152,9 @@ class MatchTeam extends Component {
 											data-dismiss='alert'
 											aria-label='Close'
 											onClick={() =>
-												this.setState({ message: null })
+												this.setState({
+													message: null
+												})
 											}
 										>
 											<span aria-hidden='true'>
@@ -99,6 +164,59 @@ class MatchTeam extends Component {
 									</div>
 								</div>
 							)}
+
+							{/* Players started the match */}
+							{availablePlayers.length > 0 && (
+								<div className='form-group'>
+									<label>
+										Jugadores que iniciaron el partido
+									</label>
+									<select
+										className='form-control'
+										onChange={this.changeTeamPlayer}
+										value={pp}
+									>
+										<option value=''>------</option>
+										{availablePlayers.map((p, index) => (
+											<option key={index} value={p._id}>
+												{p.name} {p.lastName}{' '}
+												{`(${p.number})`}
+											</option>
+										))}
+									</select>
+									<button
+										type='submit'
+										className='btn btn-primary'
+										onClick={this.addPlayer}
+									>
+										<FontAwesomeIcon icon={faPlus} />
+										Agregar
+									</button>
+								</div>
+							)}
+
+							{!tgUpdated && (
+								<div className='form-group'>
+									<label>Total de goles</label>
+
+									<input
+										value={totalGoals}
+										onChange={this.changeTotalGoals}
+										className='form-control mr-2'
+										type='number'
+										min='0'
+									/>
+									<button
+										type='submit'
+										className='btn btn-primary'
+										onClick={this.addTotalGoals}
+									>
+										<FontAwesomeIcon icon={faPlus} />
+										Agregar
+									</button>
+								</div>
+							)}
+
 							<div className='form-group'>
 								<label
 									htmlFor={`selectMatchPlayer${
@@ -116,11 +234,13 @@ class MatchTeam extends Component {
 									<option value=''>------</option>
 									{players.map((p, index) => (
 										<option key={index} value={p.number}>
-											Nombre: {p.name} Apellido:{' '}
-											{p.lastName} Nº camiseta: {p.number}
+											{p.name} {p.lastName}{' '}
+											{`(${p.number})`}
 										</option>
 									))}
 								</select>
+							</div>
+							<div className='form-group'>
 								<label htmlFor={`selectMinute${player.number}`}>
 									Minuto
 								</label>
@@ -132,6 +252,8 @@ class MatchTeam extends Component {
 									onChange={this.changeMinute}
 									value={minute}
 								/>
+							</div>
+							<div className='form-group'>
 								<label htmlFor={`selectEvent${player.minute}`}>
 									Evento
 								</label>
@@ -148,17 +270,17 @@ class MatchTeam extends Component {
 										</option>
 									))}
 								</select>
-								<div className='form-group row mt-2'>
-									<div className='col-sm-10'>
-										<button
-											type='submit'
-											className='btn btn-primary'
-											onClick={this.addLine}
-										>
-											<FontAwesomeIcon icon={faPlus} />
-											Añadir
-										</button>
-									</div>
+							</div>
+							<div className='form-group row mt-2'>
+								<div className='col-sm-10'>
+									<button
+										type='submit'
+										className='btn btn-primary'
+										onClick={this.addLine}
+									>
+										<FontAwesomeIcon icon={faPlus} />
+										Añadir
+									</button>
 								</div>
 							</div>
 						</div>

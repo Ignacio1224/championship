@@ -12,4 +12,11 @@ function deleteChampionship(championship) {
 	};
 }
 
-export { createChampionship, deleteChampionship };
+function createMatches(matches) {
+	return {
+		type: 'CREATE_MATCHES',
+		matches
+	};
+}
+
+export { createChampionship, deleteChampionship, createMatches };

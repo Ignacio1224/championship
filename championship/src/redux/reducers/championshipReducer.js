@@ -6,6 +6,9 @@ export default function championshipReducer(state = {}, action) {
 		case 'DELETE_CHAMPIONSHIP':
 			return { ...state, championship: {} };
 
+		case 'CREATE_MATCHES':
+			return { ...state, matches: action.matches };
+
 		default:
 			return state;
 	}
