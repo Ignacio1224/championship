@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { updateMatch } from '../redux/actions/championshipActions';
 import MatchTeam from './MatchTeam';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -16,8 +17,7 @@ class Match extends Component {
 			team2: '',
 			events: [],
 			playersT1: [],
-			playersT2: [],
-			totalGoals: []
+			playersT2: []
 		};
 	}
 
@@ -39,10 +39,6 @@ class Match extends Component {
 		this.setState({ playersT2: [...this.state.playersT2, p] });
 	};
 
-	addTotalGoals = obj => {
-		this.setState({ totalGoals: [...this.state.totalGoals, { ...obj }] });
-	};
-
 	createMatch = event => {
 		event.preventDefault();
 
@@ -51,16 +47,14 @@ class Match extends Component {
 			team2,
 			playersT1,
 			playersT2,
-			// totalGoals,
 			teamVsTeam,
 			events
 		} = this.state;
 
-		if (team1 !== '' && team2 !== '') {
-			const miInit = {
-				method: 'PUT',
-				headers: { 'Content-type': 'application/json' },
-				body: JSON.stringify({
+		if (playersT1.length === 5 && playersT2.length === 5) {
+			this.props.dispatch(
+				updateMatch({
+					_id: teamVsTeam,
 					team1: {
 						id: team1,
 						players: playersT1
@@ -73,44 +67,59 @@ class Match extends Component {
 					// _id: teamVsTeam,
 					// championshipId: this.props.championship.championship.id
 				})
-			};
-
-			// ERROR
-			fetch(
-				`http://taller-frontend.herokuapp.com/api/match/${teamVsTeam}`,
-				miInit
-			)
-				.then(res => res.json())
-				.then(response => {
-					if (!response.error) {
-						this.setState({
-							message: {
-								className: 'success',
-								title: 'Ok!',
-								message: 'Juego añadido!'
-							}
-						});
-					} else {
-						this.setState({
-							message: {
-								className: 'danger',
-								title: 'Error!',
-								message: response.error
-							}
-						});
-					}
-				})
-				.catch(err => {
-					console.log(err);
-
-					// this.setState({
-					// 	message: {
-					// 		className: 'danger',
-					// 		title: 'Error!',
-					// 		message: err
-					// 	}
-					// });
-				});
+			);
+			// const miInit = {
+			// 	method: 'PUT',
+			// 	headers: { 'Content-Type': 'application/json' },
+			// 	body: JSON.stringify({
+			// 		team1: {
+			// 			id: team1,
+			// 			players: playersT1
+			// 		},
+			// 		team2: {
+			// 			id: team2,
+			// 			players: playersT2
+			// 		},
+			// 		events
+			// 		// _id: teamVsTeam,
+			// 		// championshipId: this.props.championship.championship.id
+			// 	})
+			// };
+			// // ERROR
+			// fetch(
+			// 	`http://taller-frontend.herokuapp.com/api/match/${teamVsTeam}`,
+			// 	miInit
+			// )
+			// 	.then(res => res.json())
+			// 	.then(response => {
+			// 		if (!response.error) {
+			// 			this.setState({
+			// 				message: {
+			// 					className: 'success',
+			// 					title: 'Ok!',
+			// 					message: 'Juego añadido!'
+			// 				}
+			// 			});
+			// 		} else {
+			// 			this.setState({
+			// 				message: {
+			// 					className: 'danger',
+			// 					title: 'Error!',
+			// 					message: response.error
+			// 				}
+			// 			});
+			// 		}
+			// 	})
+			// 	.catch(err => {
+			// 		console.log(err);
+			// 		this.setState({
+			// 			message: {
+			// 				className: 'danger',
+			// 				title: 'Error!',
+			// 				message: err
+			// 			}
+			// 		});
+			// 	});
 		} else {
 			this.setState({
 				message: {
@@ -186,7 +195,6 @@ class Match extends Component {
 											loadInitialPlayers={
 												this.loadInitialPlayers1
 											}
-											addTotalGoals={this.addTotalGoals}
 										/>
 										<MatchTeam
 											team={this.getTeam(team2)}
@@ -194,7 +202,6 @@ class Match extends Component {
 											loadInitialPlayers={
 												this.loadInitialPlayers2
 											}
-											addTotalGoals={this.addTotalGoals}
 										/>
 									</>
 								)}

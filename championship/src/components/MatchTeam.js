@@ -16,9 +16,7 @@ class MatchTeam extends Component {
 			pp: '',
 			player: '',
 			minute: '',
-			mEvent: '',
-			totalGoals: 0,
-			tgUpdated: false
+			mEvent: ''
 		};
 
 		this.matchEvents = ['Gol', 'Tarjeta amarilla', 'Expulsión'];
@@ -55,9 +53,9 @@ class MatchTeam extends Component {
 		}
 
 		addEvent({
-			player,
+			playerId: player,
 			minute,
-			mEvent
+			type: mEvent
 		});
 
 		return this.setState({
@@ -74,21 +72,6 @@ class MatchTeam extends Component {
 
 	changeTeamPlayer = ({ target: { value } }) => {
 		this.setState({ pp: value });
-	};
-
-	changeTotalGoals = ({ target: { value } }) =>
-		this.setState({ totalGoals: value });
-
-	addTotalGoals = event => {
-		event.preventDefault();
-		const { addTotalGoals } = this.props;
-
-		addTotalGoals({
-			goals: this.state.totalGoals,
-			team: this.props.team._id
-		});
-
-		this.setState({ tgUpdated: true });
 	};
 
 	addPlayer = event => {
@@ -119,9 +102,7 @@ class MatchTeam extends Component {
 			player,
 			minute,
 			mEvent,
-			message,
-			totalGoals,
-			tgUpdated
+			message
 		} = this.state;
 
 		const {
@@ -188,28 +169,6 @@ class MatchTeam extends Component {
 										type='submit'
 										className='btn btn-primary'
 										onClick={this.addPlayer}
-									>
-										<FontAwesomeIcon icon={faPlus} />
-										Agregar
-									</button>
-								</div>
-							)}
-
-							{!tgUpdated && (
-								<div className='form-group'>
-									<label>Total de goles</label>
-
-									<input
-										value={totalGoals}
-										onChange={this.changeTotalGoals}
-										className='form-control mr-2'
-										type='number'
-										min='0'
-									/>
-									<button
-										type='submit'
-										className='btn btn-primary'
-										onClick={this.addTotalGoals}
 									>
 										<FontAwesomeIcon icon={faPlus} />
 										Agregar

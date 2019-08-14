@@ -7,6 +7,8 @@ import {
 	deleteChampionship,
 	createMatches
 } from '../redux/actions/championshipActions';
+import { MATCHES } from '../Matches';
+import { giveMatchesStadistics } from '../Utils';
 import { createTeam, deleteTeam } from '../redux/actions/teamActions';
 // import { Link } from "react-router-dom";
 
@@ -65,7 +67,9 @@ class LogIn extends React.Component {
 			.then(resp => resp.json())
 			.then(response => {
 				if (!response.error) {
-					this.props.dispatch(createMatches([...response]));
+					// this.props.dispatch(createMatches([...response]));
+					this.props.dispatch(createMatches([...MATCHES]));
+					giveMatchesStadistics([...MATCHES]);
 				}
 			});
 	};
