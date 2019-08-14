@@ -69,7 +69,7 @@ class LogIn extends React.Component {
 				if (!response.error) {
 					// this.props.dispatch(createMatches([...response]));
 					this.props.dispatch(createMatches([...MATCHES]));
-					giveMatchesStadistics([...MATCHES]);
+					giveMatchesStadistics([...MATCHES], this.props.team);
 				}
 			});
 	};
@@ -232,7 +232,7 @@ function mapStateToProps(state) {
 	return {
 		user: state.userReducer.user,
 		championship: state.championshipReducer.championship,
-		team: state.teamReducer.team
+		team: state.teamReducer
 	};
 }
 

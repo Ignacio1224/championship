@@ -10,25 +10,26 @@ export default function championshipReducer(state = {}, action) {
 			return { ...state, matches: action.matches };
 
 		case 'UPDATE_MATCH':
-			let matchF = [
-				...state.matches.filter(m => m._id === action.match._id)
-			];
-			matchF[0].team1 = action.match.team1;
-			matchF[0].team2 = action.match.team2;
-			matchF[0].events = action.match.events;
+			let dumpedMatches = { ...state, matches: [...state.matches] };
+			dumpedMatches = dumpedMatches.matches;
 
-			debugger;
+			let matchF = dumpedMatches.filter(
+				m => m._id === action.match._id
+			)[0];
+
+			// IMPORTANTE: Detecta mutaciones no solo por fuera del objeto, sino que dentro del mismo tambien
+			matchF = {
+				...matchF,
+				team1: action.match.team1,
+				team2: action.match.team2,
+				events: action.match.events
+			};
 
 			let otherMatches = [
-				...state.matches.filter(m => m._id !== action.match._id)
+				...dumpedMatches.filter(m => m._id !== action.match._id)
 			];
 
-			otherMatches = [...matchF, ...otherMatches];
-
-			let a = [];
-			otherMatches.forEach(m => (a = [...a, { ...m }]));
-
-			return { ...state, matches: a };
+			return { ...state, matches: [...otherMatches, matchF] };
 
 		case 'ADD_POSITION':
 			action.positions.sort((a, b) => {

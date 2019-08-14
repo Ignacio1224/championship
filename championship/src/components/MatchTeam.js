@@ -76,10 +76,12 @@ class MatchTeam extends Component {
 
 	addPlayer = event => {
 		event.preventDefault();
-		this.setState({
-			teamPlayers: [...this.state.teamPlayers, this.state.pp]
-		});
-		this.loadAvailablePlayers(this.state.pp);
+		if (this.state.pp !== '') {
+			this.setState({
+				teamPlayers: [...this.state.teamPlayers, this.state.pp]
+			});
+			this.loadAvailablePlayers(this.state.pp);
+		}
 	};
 
 	loadAvailablePlayers = player => {
@@ -106,7 +108,7 @@ class MatchTeam extends Component {
 		} = this.state;
 
 		const {
-			team: { name, players }
+			team: { name, players, _id }
 		} = this.props;
 
 		return (
@@ -149,13 +151,14 @@ class MatchTeam extends Component {
 							{/* Players started the match */}
 							{availablePlayers.length > 0 && (
 								<div className='form-group'>
-									<label>
+									<label htmlFor={`PIP${_id}`}>
 										Jugadores que iniciaron el partido
 									</label>
 									<select
 										className='form-control'
 										onChange={this.changeTeamPlayer}
 										value={pp}
+										id={`PIP${_id}`}
 									>
 										<option value=''>------</option>
 										{availablePlayers.map((p, index) => (
@@ -177,22 +180,18 @@ class MatchTeam extends Component {
 							)}
 
 							<div className='form-group'>
-								<label
-									htmlFor={`selectMatchPlayer${
-										player.number
-									}`}
-								>
+								<label htmlFor={`selectMatchPlayer${_id}`}>
 									Jugador
 								</label>
 								<select
 									className='form-control'
-									id={`selectMatchPlayer${player.number}`}
+									id={`selectMatchPlayer${_id}`}
 									onChange={this.changePlayer}
 									value={player}
 								>
 									<option value=''>------</option>
 									{players.map((p, index) => (
-										<option key={index} value={p.number}>
+										<option key={index} value={p._id}>
 											{p.name} {p.lastName}{' '}
 											{`(${p.number})`}
 										</option>
@@ -200,25 +199,25 @@ class MatchTeam extends Component {
 								</select>
 							</div>
 							<div className='form-group'>
-								<label htmlFor={`selectMinute${player.number}`}>
+								<label htmlFor={`selectMinute${_id}`}>
 									Minuto
 								</label>
 								<input
 									type='number'
 									min='1'
 									className='form-control'
-									id={`selectMinute${player.number}`}
+									id={`selectMinute${_id}`}
 									onChange={this.changeMinute}
 									value={minute}
 								/>
 							</div>
 							<div className='form-group'>
-								<label htmlFor={`selectEvent${player.minute}`}>
+								<label htmlFor={`selectEvent${_id}`}>
 									Evento
 								</label>
 								<select
 									className='form-control'
-									id={`selectEvent${player.minute}`}
+									id={`selectEvent${_id}`}
 									onChange={this.changeEvent}
 									value={mEvent}
 								>

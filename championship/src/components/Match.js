@@ -17,7 +17,8 @@ class Match extends Component {
 			team2: '',
 			events: [],
 			playersT1: [],
-			playersT2: []
+			playersT2: [],
+			avMatches: this.availableMatches()
 		};
 	}
 
@@ -32,11 +33,11 @@ class Match extends Component {
 	};
 
 	loadInitialPlayers1 = p => {
-		this.setState({ playersT1: [...this.state.playersT1, p] });
+		if (p) this.setState({ playersT1: [...this.state.playersT1, p] });
 	};
 
 	loadInitialPlayers2 = p => {
-		this.setState({ playersT2: [...this.state.playersT2, p] });
+		if (p) this.setState({ playersT2: [...this.state.playersT2, p] });
 	};
 
 	createMatch = event => {
@@ -50,8 +51,7 @@ class Match extends Component {
 			teamVsTeam,
 			events
 		} = this.state;
-
-		if (playersT1.length === 5 && playersT2.length === 5) {
+		if (playersT1.length >= 5 && playersT2.length >= 5) {
 			this.props.dispatch(
 				updateMatch({
 					_id: teamVsTeam,
@@ -68,6 +68,17 @@ class Match extends Component {
 					// championshipId: this.props.championship.championship.id
 				})
 			);
+
+			this.setState({
+				teamVsTeam: '',
+				team1: '',
+				team2: '',
+				events: [],
+				playersT1: [],
+				playersT2: [],
+				avMatches: this.availableMatches()
+			});
+
 			// const miInit = {
 			// 	method: 'PUT',
 			// 	headers: { 'Content-Type': 'application/json' },
@@ -132,9 +143,10 @@ class Match extends Component {
 	};
 
 	addEvents = ev => {
-		this.setState({
-			events: [...this.state.events, { ...ev }]
-		});
+		if (ev)
+			this.setState({
+				events: [...this.state.events, { ...ev }]
+			});
 	};
 
 	changeTeamVsTeam = ({ target: { value } }) => {
@@ -151,15 +163,22 @@ class Match extends Component {
 		});
 	};
 
+	availableMatches = () => {
+		const {
+			championship: { matches }
+		} = this.props;
+
+		return [...matches.filter(m => m.__v === 0)];
+	};
+
 	render() {
 		const {
 			championship: {
-				championship: { isConfirmed },
-				matches
+				championship: { isConfirmed }
 			}
 		} = this.props;
 
-		const { teamVsTeam, message, team1, team2 } = this.state;
+		const { teamVsTeam, message, team1, team2, avMatches } = this.state;
 
 		return (
 			<div className='row'>
@@ -177,7 +196,7 @@ class Match extends Component {
 										onChange={this.changeTeamVsTeam}
 									>
 										<option>------</option>
-										{matches.map((m, i) => (
+										{avMatches.map((m, i) => (
 											<option key={i} value={m._id}>
 												{this.getTeam(m.team1.id).name}
 												{' VS '}
